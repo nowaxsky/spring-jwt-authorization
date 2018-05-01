@@ -1,5 +1,7 @@
 package org.cpm.zwl.service.impl;
 
+import java.nio.file.attribute.UserPrincipal;
+import javax.transaction.Transactional;
 import org.cpm.zwl.bean.JwtUser;
 import org.cpm.zwl.dao.entity.User;
 import org.cpm.zwl.dao.persistence.UserRepository;
@@ -16,16 +18,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   private UserRepository userRepository;
 
   @Override
-  public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-    User user = userRepository.findByUserId(userId);
+  public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+    // Let people login with either username or email
+    User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+        .orElseThrow(() -> new UsernameNotFoundException(
+            "User not found with username or email : " + usernameOrEmail));
 
-    if (user == null) {
-      throw new UsernameNotFoundException(userId);
-    }
-    
-    System.out.println("username: " + user.getUserId());
-    System.out.println("password: " + user.getPassword());
-    return new JwtUser(user);
+    return JwtUser.create(user);
+  }
+
+  // This method is used by JWTAuthenticationFilter
+  @Transactional
+  public UserDetails loadUserById(Long userId) {
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found with userId : " + userId));
+
+    return JwtUser.create(user);
   }
 
 }
