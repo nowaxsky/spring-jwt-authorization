@@ -1,3 +1,4 @@
+package org.cpm.zwl.presentation.response;
 //package org.cpm.zwl.presentation.vos;
 //
 //import org.cpm.zwl.util.ResultStatus;

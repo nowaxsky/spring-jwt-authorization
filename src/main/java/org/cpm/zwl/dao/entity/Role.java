@@ -9,7 +9,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "T_ROLE")
+@Table(name = "T_ROLES")
 public class Role implements Serializable {
 
   /**

@@ -1,4 +1,4 @@
-package org.cpm.zwl.presentation.vos;
+package org.cpm.zwl.presentation.response;
 
 public class JwtAuthenticationResponse {
 

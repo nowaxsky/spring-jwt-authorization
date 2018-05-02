@@ -2,11 +2,25 @@ package org.cpm.zwl.dao.entity;
 
 import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.Table;
+import javax.validation.constraints.Size;
+import org.cpm.zwl.dao.audit.DateAudit;
+import org.hibernate.annotations.NaturalId;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 
 @Entity
-@Table(name = "T_USER")
-public class User implements Serializable {
+@Table(name = "T_USERS")
+public class User extends DateAudit implements Serializable {
 
   /**
    * 
@@ -14,25 +28,29 @@ public class User implements Serializable {
   private static final long serialVersionUID = -7036364716966549707L;
 
   @Id
-  @SequenceGenerator(name = "sequence", sequenceName = "t_user_user_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequence")
-  @Column(name = "USER_ID")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userId;
 
-  @Column(name = "USERNAME")
+  @NotBlank
+  @Size(max = 15)
   private String username;
  
-  @Column(name = "PASSWORD")
+  @NotBlank
+  @Size(max = 100)
   private String password;
   
-  @Column(name = "NAME")
+  @NotBlank
+  @Size(max = 40)
   private String name;
   
+  @NaturalId
+  @NotBlank
   @Column(name = "EMAIL")
+  @Email
   private String email;
 
   @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "T_USER_ROLE", joinColumns = @JoinColumn(name = "USER_ID"),
+  @JoinTable(name = "T_USER_ROLES", joinColumns = @JoinColumn(name = "USER_ID"),
   inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))
   private Set<Role> roles;
   
