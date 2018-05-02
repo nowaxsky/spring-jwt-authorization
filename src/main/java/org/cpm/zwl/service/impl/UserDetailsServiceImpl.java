@@ -9,6 +9,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * To authenticate a User or perform various role-based checks, Spring security needs to load users
+ * details somehow.
+ * 
+ * @author CPM
+ *
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -16,16 +23,22 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   private UserRepository userRepository;
 
   @Override
-  public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-    User user = userRepository.findByUserId(userId);
+  public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 
-    if (user == null) {
-      throw new UsernameNotFoundException(userId);
-    }
-    
-    System.out.println("username: " + user.getUserId());
-    System.out.println("password: " + user.getPassword());
-    return new JwtUser(user);
+    // Let people login with either username or email
+    User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
+        .orElseThrow(() -> new UsernameNotFoundException(
+            "User not found with username or email : " + usernameOrEmail));
+
+    return JwtUser.create(user);
+  }
+
+  // This method is used by JWTAuthenticationFilter
+  public UserDetails loadUserByUserId(Long userId) {
+    User user = userRepository.findByUserId(userId)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found with userId : " + userId));
+
+    return JwtUser.create(user);
   }
 
 }
