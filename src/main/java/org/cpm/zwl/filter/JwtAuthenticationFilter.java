@@ -17,6 +17,23 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * JWTAuthenticationFilter gets the JWT token from the request, validates it, loads the user
+ * associated with the token, and passes it to Spring Security.
+ * 
+ * 1. Read JWT authentication token from the Authorization header of all the requests.
+ * 
+ * 2. Validate the token.
+ * 
+ * 3. Load the user details associated with that token.
+ * 
+ * 4. Sets the user details in Spring Security’s SecurityContext. Spring Security uses the user
+ * details to perform authorization checks. We can also access the user details stored in the
+ * SecurityContext in our controllers to perform our business logic.
+ * 
+ * @author CPM
+ *
+ */
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   @Autowired
@@ -34,14 +51,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
       String jwt = getJwtFromRequest(request);
 
       if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
-        Long userId = tokenProvider.getUserIdFromJWT(jwt);
+        Long userId = tokenProvider.getUserIdFromJwt(jwt);
+        logger.info("user id: " + userId);
 
         /*
          * Note that you could also encode the user's username and roles inside JWT claims and
          * create the UserDetails object by parsing those claims from the JWT. That would avoid the
          * following database hit. It's completely up to you.
          */
-        UserDetails userDetails = userDetailsService.loadUserById(userId);
+        UserDetails userDetails = userDetailsService.loadUserByUserId(userId);
         UsernamePasswordAuthenticationToken authentication =
             new UsernamePasswordAuthenticationToken(userDetails, null,
                 userDetails.getAuthorities());
@@ -59,6 +77,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
   private String getJwtFromRequest(HttpServletRequest request) {
     String bearerToken = request.getHeader("Authorization");
     if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+      logger.info("bearer token: " + bearerToken.substring(7, bearerToken.length()));
       return bearerToken.substring(7, bearerToken.length());
     }
     return null;

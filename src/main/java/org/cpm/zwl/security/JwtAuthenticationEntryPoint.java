@@ -10,11 +10,22 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+/**
+ * This class is used to return a 401 unauthorized error to clients that try to access a protected
+ * resource without proper authentication.
+ * 
+ * @author CPM
+ *
+ */
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
   private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationEntryPoint.class);
 
+  /**
+   * This method is called whenever an exception is thrown due to an unauthenticated user trying to
+   * access a resource that requires authentication.
+   */
   @Override
   public void commence(HttpServletRequest httpServletRequest,
       HttpServletResponse httpServletResponse, AuthenticationException e)

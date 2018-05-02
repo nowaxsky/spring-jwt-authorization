@@ -1,7 +1,5 @@
 package org.cpm.zwl.service.impl;
 
-import java.nio.file.attribute.UserPrincipal;
-import javax.transaction.Transactional;
 import org.cpm.zwl.bean.JwtUser;
 import org.cpm.zwl.dao.entity.User;
 import org.cpm.zwl.dao.persistence.UserRepository;
@@ -11,6 +9,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+/**
+ * To authenticate a User or perform various role-based checks, Spring security needs to load users
+ * details somehow.
+ * 
+ * @author CPM
+ *
+ */
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -19,6 +24,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+
     // Let people login with either username or email
     User user = userRepository.findByUsernameOrEmail(usernameOrEmail, usernameOrEmail)
         .orElseThrow(() -> new UsernameNotFoundException(
@@ -28,8 +34,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
   }
 
   // This method is used by JWTAuthenticationFilter
-  @Transactional
-  public UserDetails loadUserById(Long userId) {
+  public UserDetails loadUserByUserId(Long userId) {
     User user = userRepository.findByUserId(userId)
         .orElseThrow(() -> new UsernameNotFoundException("User not found with userId : " + userId));
 

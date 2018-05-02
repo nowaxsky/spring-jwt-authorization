@@ -21,11 +21,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(
-    securedEnabled = true,
-    jsr250Enabled = true,
-    prePostEnabled = true
-)
+
+/*
+ * This is used to enable method level security based on annotations. You can use following three
+ * types of annotations for securing your methods
+ * like @Secured("ROLE_ADMIN"), @RolesAllowed("ROLE_ADMIN"), @PreAuthorize("isAnonymous()")
+ */
+@EnableGlobalMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Autowired
@@ -39,6 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new JwtAuthenticationFilter();
   }
 
+  /**
+   * You can use AuthenticationManagerBuilder to build in-memory authentication, LDAP
+   * authentication, JDBC authentication, or add your custom authentication provider.
+   */
   @Override
   public void configure(AuthenticationManagerBuilder authenticationManagerBuilder)
       throws Exception {
@@ -46,6 +52,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .passwordEncoder(passwordEncoder());
   }
 
+  /**
+   * Use the configured AuthenticationManager to authenticate a user in the login API.
+   */
   @Bean(BeanIds.AUTHENTICATION_MANAGER)
   @Override
   public AuthenticationManager authenticationManagerBean() throws Exception {
@@ -57,6 +66,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     return new BCryptPasswordEncoder();
   }
 
+  /**
+   * The HttpSecurity configurations are used to configure security functionalities like csrf,
+   * sessionManagement, and add rules to protect resources based on various conditions.
+   */
   @Override
   protected void configure(HttpSecurity http) throws Exception {
     http.cors().and().csrf().disable().exceptionHandling()

@@ -9,6 +9,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+/*
+ * Spring Security will use the information stored in the JwtUser object to perform authentication
+ * and authorization.
+ */
 public class JwtUser implements UserDetails {
 
   /**
